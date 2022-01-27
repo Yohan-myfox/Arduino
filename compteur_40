@@ -1,0 +1,139 @@
+// LES PINS QUI SERONT CONNECTé AUX 7 SEGGMENTS
+uint8_t SEGMENT_PIN_A = 13 ;
+uint8_t SEGMENT_PIN_B = 2 ;
+uint8_t SEGMENT_PIN_C = 3 ;
+uint8_t SEGMENT_PIN_D = 4 ;
+uint8_t SEGMENT_PIN_E = 5 ;
+uint8_t SEGMENT_PIN_F = 6;
+uint8_t SEGMENT_PIN_G = 7;
+
+// LES PINS DE SELCTION DES SEGMENTS
+/*
+  Ces doivent être connecté aux D1 , D2
+  du module 2 digit 7 segments
+*/
+uint8_t PIN_DIGIT_1 = 8 ;
+uint8_t PIN_DIGIT_2 = 9 ;
+
+
+// Liste des fonctions
+void set_7_segment_digit(int a, int b, int c, int d, int e, int f, int g);
+void ecrire_chiffre(int chiffre);// Pour écrire un chiffre de 0 à 9
+void ecrire_nombre(int nombre); // Pour écrire  un nombre compris entre 0 et 9999
+int nombre = 0 ;
+
+void setup() {
+  // LES PINS DES SEGMENTS COMME DES SORTIES NUMERIQUE
+  pinMode(SEGMENT_PIN_A, OUTPUT);
+  pinMode(SEGMENT_PIN_B, OUTPUT);
+  pinMode(SEGMENT_PIN_C, OUTPUT);
+  pinMode(SEGMENT_PIN_D, OUTPUT);
+  pinMode(SEGMENT_PIN_E, OUTPUT);
+  pinMode(SEGMENT_PIN_F, OUTPUT);
+  pinMode(SEGMENT_PIN_G, OUTPUT);
+
+  // LES PINS DE SELECTION AUSSI COMME DES SORTIES
+  pinMode(PIN_DIGIT_1, OUTPUT);
+  pinMode(PIN_DIGIT_2, OUTPUT);
+
+
+}
+
+void loop() {
+
+  int n = 0 ;
+  while (n < 41) {
+    n++ ;
+    ecrire_nombre(nombre);
+    // On ecrit le même nombre pendant quelque temps et on m'incremente
+  }
+  nombre++ ;
+  if ( nombre == 41) {
+    nombre = 0 ;
+  }
+
+}
+/*
+  Pour chaque chiffre de 0 jusqu'a 9  on allume les segments correspndants
+  Un segments est allumé si la tension appliquée est égale à 0 dans le cas
+  d'un afficheur 7 segments à anode communde
+*/
+void ecrire_chiffre(int chiffre) {
+  switch (chiffre) {
+    case 0 :
+      set_7_segment_digit(0, 0, 0, 0, 0, 0, 1);
+      break ;
+    case 1 :
+      set_7_segment_digit(1, 0, 0, 1, 1, 1, 1);
+      break ;
+    case 2 :
+      set_7_segment_digit(0, 0, 1, 0, 0, 1, 0);
+      break ;
+    case 3 :
+      set_7_segment_digit(0, 0, 0, 0, 1, 1, 0);
+      break ;
+    case 4 :
+      set_7_segment_digit(1, 0, 0, 1, 1, 0, 0);
+      break ;
+    case 5 :
+      set_7_segment_digit(0, 1, 0, 0, 1, 0, 0);
+      break ;
+    case 6 :
+      set_7_segment_digit(0, 1, 0, 0, 0, 0, 0);
+      break ;
+    case 7 :
+      set_7_segment_digit(0, 0, 0, 1, 1, 1, 1);
+      break ;
+    case 8 :
+      set_7_segment_digit(0, 0, 0, 0, 0, 0, 0);
+      break ;
+    case 9 :
+      set_7_segment_digit(0, 0, 0, 0, 1, 0, 0);
+      break ;
+  }
+
+}
+
+/*
+  Cette fonction permet d'affecter les différents aux  7 entrées de l'afficher 7 segments
+*/
+void set_7_segment_digit(int a, int b, int c, int d, int e, int f, int g ) {
+  digitalWrite(SEGMENT_PIN_A, a);
+  digitalWrite(SEGMENT_PIN_B, b);
+  digitalWrite(SEGMENT_PIN_C, c);
+  digitalWrite(SEGMENT_PIN_D, d);
+  digitalWrite(SEGMENT_PIN_E, e);
+  digitalWrite(SEGMENT_PIN_F, f);
+  digitalWrite(SEGMENT_PIN_G, g);
+}
+
+// Une fonction qui permettra de d'afficher un nombre à quatre chiffres (0-99)
+void ecrire_nombre(int nombre) {
+  int d1 = nombre / 10; // d1 contient le chiffre des dizaines
+
+  int d2 = nombre % 10; // d2 contient le reste qui represente les unités
+
+
+  /*
+    Cette partie il faut afficher chaque chiffre l'un après l'autre .
+    On selectionne chaque git pendant et on fait un delay et on passe au
+    suivant
+    NB: Avant de selectionner un digit il faut désectionner le git précendant
+    -> Avant d'activer 1 on désactive 1
+    -> Avant d'activer 2 on désactive 1
+  */
+
+  digitalWrite(PIN_DIGIT_1, 1); // On active Le digit 1
+  ecrire_chiffre(d1);  // On affiche d1
+  _delay_us(10000); // la durée de l'affichage
+
+  digitalWrite(PIN_DIGIT_1, 0); // On désactive le digit 1
+  digitalWrite(PIN_DIGIT_2, 1); // On active le digit 2
+  ecrire_chiffre(d2);  // On affiche d2
+  _delay_us(10000); // la durée de l'affichage
+
+  digitalWrite(PIN_DIGIT_2, 0); // On désactive le digit 2
+  _delay_us(10000); // la durée de l'affichage
+
+
+}
